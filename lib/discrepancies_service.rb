@@ -41,21 +41,29 @@ class DiscrepanciesService
 
   def discrepancies_between(remote_campaign, local_campaign)
     [
-      discrepancy_for(
-        :status,
+      status_discrepancy(
         remote: remote_campaign.fetch('status'),
         local: local_campaign&.status
       ),
-      discrepancy_for(
-        :description,
+      description_discrepancy(
         remote: remote_campaign.fetch('description'),
         local: local_campaign&.ad_description
       )
     ].compact.to_h
   end
 
-  def discrepancy_for(attribute, remote:, local:)
+  def description_discrepancy(remote:, local:)
     return if remote == local
-    [attribute, { remote: remote, local: local }]
+    [:description, { remote: remote, local: local }]
+  end
+
+  def status_discrepancy(remote:, local:)
+    return if status_equivalence(remote: remote, local: local)
+    [:status, { remote: remote, local: local }]
+  end
+
+  def status_equivalence(remote:, local:)
+    remote == 'enabled' && local == 'active' ||
+    remote == 'disabled' && local == 'paused'
   end
 end
