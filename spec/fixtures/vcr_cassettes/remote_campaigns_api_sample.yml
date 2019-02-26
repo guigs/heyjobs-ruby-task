@@ -1,0 +1,72 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://mockbin.org/bin/fcb30500-7b98-476f-810d-463a0b8fc3df
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - mockbin.org
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - openresty/1.13.6.2
+      Date:
+      - Tue, 26 Feb 2019 18:53:18 GMT
+      Content-Type:
+      - text/html; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Etag:
+      - W/"1bd-EYRhNgo3KXIJmDPgnDlxeA"
+      Vary:
+      - Accept-Encoding
+      Via:
+      - kong/0.34-enterprise-edition
+      X-Kong-Upstream-Status:
+      - '200'
+      X-Kong-Upstream-Latency:
+      - '11'
+      X-Kong-Proxy-Latency:
+      - '0'
+      Kong-Cloud-Request-Id:
+      - 2f600358eced094caae045e1ec539ff6
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+        "ads":
+            [
+                {
+                    "reference": "1",
+                    "status": "enabled",
+                    "description": "Description for campaign 11"
+                },
+                {
+                    "reference": "2",
+                    "status": "disabled",
+                    "description": "Description for campaign 12"
+                },
+                {
+                    "reference": "3",
+                    "status": "enabled",
+                    "description": "Description for campaign 13"
+                }
+            ]
+        }
+    http_version: 
+  recorded_at: Tue, 26 Feb 2019 18:53:19 GMT
+recorded_with: VCR 4.0.0

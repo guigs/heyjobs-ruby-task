@@ -1,8 +1,15 @@
 # frozen_string_literal: true
 
+require 'support/vcr'
 require 'discrepancies_service'
 
 RSpec.describe DiscrepanciesService, '#call' do
+  around do |example|
+    VCR.use_cassette('remote_campaigns_api_sample') do
+      example.run
+    end
+  end
+
   context 'missing local campaigns' do
     it 'reports discrepancies with all local attributes considered nil' do
       expect(DiscrepanciesService.call).to eq(
