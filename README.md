@@ -1,7 +1,3 @@
-### Introduction
-First of all, thank you for taking the time to complete this test task!
-The purpose of the task is to get an idea of your development style: the way you structure code, automated tests you add etc.
-
 ### Task background
 
 We publish our jobs to different marketing sources. To keep track of where the particular job is published, we create
@@ -19,42 +15,111 @@ Due to various types of failures (_Ad Service_ inavailability, errors in campaig
 local `Campaigns` can fall out of sync with _Ad Service_.
 So we need a way to detect discrepancies between local and remote state.
 
-### TODOs
-1. Develop a [Service](https://medium.com/selleo/essential-rubyonrails-patterns-part-1-service-objects-1af9f9573ca1)(as in _Service Object_ pattern),
-which would get campaigns from external JSON API([example link](https://mockbin.org/bin/fcb30500-7b98-476f-810d-463a0b8fc3df)) and detect discrepancies between local and remote state.
-2. The purpose of the task is to work on business logic, so please don't create a Rails app. Rather stucture your project the following way:
-```
-|-- .ruby-version
-|-- .ruby-gemset
-|-- Gemfile
-|-- lib
-    |-- source files go here
-|-- spec
-    |-- specs go here
-```
-You're free to add gems you need(including those which are part of Rails).
+### Pre requisites
 
-3. You don't have to put all your code into one class. Please use your best judgment to split the code up into separate components.
-4. **Note** Don't fork this repository. Create you own repository and send us a link to it. You may describe some of the assumptions you had in the README file of your repository.
+You should have sqlite installed. For example, in Ubuntu, run `sudo apt-get install libsqlite3-dev`
+Then run `bundle install`
+
+### Tests
+
+Run `bundle exec rspec`
+
+### How does it work
+
+This lib implements `DiscrepanciesService` that get campaigns from external JSON API([example link](https://mockbin.org/bin/fcb30500-7b98-476f-810d-463a0b8fc3df)) and detect discrepancies between local and remote state.
+The service will match local and remote campaigns by their remote reference and compare their attributes (currently `state` and `description`).
+
+States are matched in the following way:
+
+* Local `active` is equivalent to remote `enabled`;
+* Local `paused` is equivalent to remote `disabled`;
+* Local `deleted` is supposed not to have a matching remote campaign;
 
 ### Service output format
-You're free to choose the output format which makes sense to you, we suggest the following:
+
+`DiscrepanciesService#call` will return an array with a hash for each campaign, with the attributes `remote_reference` and `discrepancies`.
+The `discrepancies` attribute is an array with discrepancies. Each discrepancy is a hash with 3 attributes: `property`, `remote` and `local`.
+
+High level example (with discrepancies details omitted):
+
 ```
 [
   {
-    "remote_reference": "1",
-    "discrepancies": [
-      "status": {
-        "remote": "disabled",
-        "local": "active"
-      },
-      "description": {
-        "remote": "Rails Engineer",
-        "local": "Ruby on Rails Developer"
-      }
-    ]
+    remote_reference: "1",
+    discrepancies: [...]
+  },
+  {
+    remote_reference: "2",
+    discrepancies: [...]
   }
 ]
 ```
 
-**Have fun!**
+When local and remote campaigns are found with no discrepant attributes the discrepancies array will be empty:
+
+```
+{
+  remote_reference: "1",
+  discrepancies: []
+}
+```
+
+When local and remote campaigns are found with discrepant attributes:
+
+```
+{
+  remote_reference: "2",
+  discrepancies: [
+    {
+      property: "status",
+      remote: "disabled",
+      local: "active"
+    },
+    {
+      propery: "description",
+      remote: "Rails Engineer",
+      local: "Ruby on Rails Developer"
+    }
+  ]
+}
+```
+
+When local campaign for remote reference does not exist, the service will report discrepancy for all attributes, using `nil` for local values. 
+
+```
+{
+  remote_reference: "3",
+  discrepancies: [
+    {
+      property: "status",
+      remote: "disabled",
+      local: nil
+    },
+    {
+      property: "description",
+      remote: "Senior Rails Engineer",
+      local: nil
+    }
+  ]
+}
+```
+
+When remote campaign is not found, and local campaign status is not `'deleted'`, then the service will report discrepancy for all attributes, using `nil` for remote values. 
+
+```
+{
+  remote_reference: "4",
+  discrepancies: [
+    {
+      property: "status",
+      remote: nil,
+      local: "paused"
+    },
+    {
+      property: "description",
+      remote: nil,
+      local: "Junior Rails Engineer"
+    }
+  ]
+}
+```
