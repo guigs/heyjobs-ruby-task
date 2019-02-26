@@ -135,4 +135,35 @@ RSpec.describe DiscrepanciesService, '#call' do
       )
     end
   end
+
+  context 'local campaigns missing remote' do
+    before do
+      Campaign.create!(
+        job_id: 4,
+        status: 'active',
+        external_reference: '4',
+        ad_description: 'Description for campaign 14'
+      )
+      Campaign.create!(
+        job_id: 5,
+        status: 'deleted',
+        external_reference: '5',
+        ad_description: 'Description for campaign 15'
+      )
+    end
+
+    it 'reports discrepancies for non deleted local campaigns' do
+      results = DiscrepanciesService.call
+      expect(results.size).to eq(4)
+      expect(results).to include(
+        {
+          remote_reference: '4',
+          discrepancies: {
+            status: { remote: nil, local: 'active' },
+            description: { remote: nil, local: 'Description for campaign 14' }
+          }
+        }
+      )
+    end
+  end
 end
