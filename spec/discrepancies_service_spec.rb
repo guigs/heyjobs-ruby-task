@@ -16,24 +16,24 @@ RSpec.describe DiscrepanciesService, '#call' do
         [
           {
             remote_reference: '1',
-            discrepancies: {
-              status: { remote: 'enabled', local: nil },
-              description: { remote: 'Description for campaign 11', local: nil }
-            }
+            discrepancies: [
+              { property: 'status', remote: 'enabled', local: nil },
+              { property: 'description', remote: 'Description for campaign 11', local: nil }
+            ]
           },
           {
             remote_reference: '2',
-            discrepancies: {
-              status: { remote: 'disabled', local: nil },
-              description: { remote: 'Description for campaign 12', local: nil }
-            }
+            discrepancies: [
+              { property: 'status', remote: 'disabled', local: nil },
+              { property: 'description', remote: 'Description for campaign 12', local: nil }
+            ]
           },
           {
             remote_reference: '3',
-            discrepancies: {
-              status: { remote: 'enabled', local: nil },
-              description: { remote: 'Description for campaign 13', local: nil }
-            }
+            discrepancies: [
+              { property: 'status', remote: 'enabled', local: nil },
+              { property: 'description', remote: 'Description for campaign 13', local: nil }
+            ]
           }
         ]
       )
@@ -54,12 +54,13 @@ RSpec.describe DiscrepanciesService, '#call' do
       expect(DiscrepanciesService.call).to include(
         {
           remote_reference: '1',
-          discrepancies: {
-            description: {
+          discrepancies: [
+            {
+              property: 'description',
               remote: 'Description for campaign 11',
               local: 'Local description'
             }
-          }
+          ]
         }
       )
     end
@@ -79,16 +80,18 @@ RSpec.describe DiscrepanciesService, '#call' do
       expect(DiscrepanciesService.call).to include(
         {
           remote_reference: '1',
-          discrepancies: {
-            status: {
+          discrepancies: [
+            {
+              property: 'status',
               remote: 'enabled',
               local: 'paused'
             },
-            description: {
+            {
+              property: 'description',
               remote: 'Description for campaign 11',
               local: 'Local description'
             }
-          }
+          ]
         }
       )
     end
@@ -121,15 +124,15 @@ RSpec.describe DiscrepanciesService, '#call' do
         [
           {
             remote_reference: '1',
-            discrepancies: {}
+            discrepancies: []
           },
           {
             remote_reference: '2',
-            discrepancies: {}
+            discrepancies: []
           },
           {
             remote_reference: '3',
-            discrepancies: {}
+            discrepancies: []
           }
         ]
       )
@@ -158,10 +161,10 @@ RSpec.describe DiscrepanciesService, '#call' do
       expect(results).to include(
         {
           remote_reference: '4',
-          discrepancies: {
-            status: { remote: nil, local: 'active' },
-            description: { remote: nil, local: 'Description for campaign 14' }
-          }
+          discrepancies: [
+            { property: 'status', remote: nil, local: 'active' },
+            { property: 'description', remote: nil, local: 'Description for campaign 14' }
+          ]
         }
       )
     end

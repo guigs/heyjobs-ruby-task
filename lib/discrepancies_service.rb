@@ -70,17 +70,17 @@ class DiscrepanciesService
         remote: remote_campaign&.fetch('description'),
         local: local_campaign&.ad_description
       )
-    ].compact.to_h
+    ].compact
   end
 
   def description_discrepancy(remote:, local:)
     return if remote == local
-    [:description, { remote: remote, local: local }]
+    { property: 'description', remote: remote, local: local }
   end
 
   def status_discrepancy(remote:, local:)
     return if status_equivalence(remote: remote, local: local)
-    [:status, { remote: remote, local: local }]
+    { property: 'status', remote: remote, local: local }
   end
 
   def status_equivalence(remote:, local:)
